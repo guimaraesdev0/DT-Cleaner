@@ -102,12 +102,16 @@ class DTCleanerApp(App):
         if isinstance(screen, ChromeScreen):
             screen.tick_mascot(frame)
 
-    def set_keys(self, pairs: list[tuple[str, str]]) -> None:
+    def set_keys(
+        self, pairs: list[tuple[str, str]], primary: tuple[str, str] | None = None
+    ) -> None:
+        """`primary` is the action that moves the user forward. It is pinned to
+        the left of the status bar and never truncated away."""
         screen = self.screen
         if isinstance(screen, ChromeScreen):
             bar = screen.status_bar
             if bar is not None:
-                bar.set_keys(pairs)
+                bar.set_keys(pairs, primary)
 
     def notify_info(self, message: str) -> None:
         self.notify(message, severity="information", timeout=3)

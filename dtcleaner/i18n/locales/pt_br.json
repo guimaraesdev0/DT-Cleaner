@@ -266,5 +266,8 @@
   "detect.tool_owned": "'{name}' é um nome de pasta exclusivo da ferramenta",
   "detect.no_project": "nenhum marcador de projeto encontrado por perto",
   "common.confidence_short": "Conf",
-  "scan.recent_finds": "ENCONTRADOS AGORA"
+  "scan.recent_finds": "ENCONTRADOS AGORA",
+  "keys.continue_cleanup": "Avançar para a limpeza",
+  "review.press_to_continue": "pressione {key} para avançar",
+  "review.select_to_continue": "selecione algo e pressione {key}"
 }

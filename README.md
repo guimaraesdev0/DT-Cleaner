@@ -19,7 +19,7 @@ and helps you delete them **safely**.
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Windows](https://img.shields.io/badge/Windows-supported-success.svg)](docs/platforms.md)
 [![Linux / macOS](https://img.shields.io/badge/Linux%20%7C%20macOS-experimental-orange.svg)](docs/platforms.md)
-[![Tests](https://img.shields.io/badge/tests-234%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-248%20passing-success.svg)](tests/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 </div>
@@ -118,7 +118,8 @@ dtc scan --path "<path it prints>"     # reports only, never deletes
 1. **Scan** — pick Quick (your usual project folders), Full (whole drives) or
    Custom. Cancel any time with `ESC`.
 2. **Review** — Safe Mode pre-selects only LOW-risk items it is ≥85% confident
-   about. Everything else waits for you.
+   about. Everything else waits for you. **Press `C` when you are happy with
+   the selection** — the screen tells you so, bottom-left.
 3. **Preview** — the last screen before anything happens. Nothing is deleted yet.
 4. **Clean** — each item is re-checked against the safety rules *at deletion
    time*, then moved to the Recycle Bin (or trash).
@@ -141,6 +142,7 @@ client folder left alone forever? Press `P`.
 
 | Key | Action |
 |---|---|
+| **`C`** | **continue to the cleanup preview** |
 | `↑` `↓` `TAB` | navigate |
 | `SPACE` | toggle selection |
 | `A` | select all **safe** items (never "all") |
@@ -148,7 +150,6 @@ client folder left alone forever? Press `P`.
 | `D` | details — why it was detected |
 | `R` | remove from the cleanup list |
 | `P` | protect the path permanently |
-| `C` | confirm and continue |
 | `/` | filter |
 | `ESC` | back / cancel |
 | `Q` | quit |
@@ -310,7 +311,7 @@ or macOS is the single most useful contribution right now.**
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                     # 234 tests
+pytest -q                     # 248 tests
 pytest -q --cov=dtcleaner     # with coverage
 ```
 

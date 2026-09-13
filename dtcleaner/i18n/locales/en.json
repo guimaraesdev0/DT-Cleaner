@@ -266,5 +266,8 @@
   "detect.tool_owned": "'{name}' is a folder name owned by its tool",
   "detect.no_project": "no project marker found nearby",
   "common.confidence_short": "Conf",
-  "scan.recent_finds": "RECENT FINDS"
+  "scan.recent_finds": "RECENT FINDS",
+  "keys.continue_cleanup": "Continue to cleanup",
+  "review.press_to_continue": "press {key} to continue",
+  "review.select_to_continue": "select something, then press {key}"
 }

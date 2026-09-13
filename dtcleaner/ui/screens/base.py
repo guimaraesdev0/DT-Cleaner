@@ -128,7 +128,7 @@ class ChromeScreen(Screen):
             header.set_mood(mood)
         bar = self.status_bar
         if bar is not None:
-            bar.set_keys(keys)
+            bar.set_keys(keys, getattr(bar, "_primary", None))
 
     @property
     def header(self) -> AppHeader | None:

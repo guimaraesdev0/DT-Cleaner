@@ -59,29 +59,48 @@ class AppHeader(Static):
 class StatusBar(Static):
     """Bottom bar listing the keys live on the current screen.
 
-    Pairs are dropped from the right when they do not fit, rather than wrapping
-    onto a second row -- the bar is docked at height 1 and a wrap would push
-    content off screen.
+    Secondary hints are dropped from the right when they do not fit, rather
+    than wrapping onto a second row -- the bar is docked at height 1 and a wrap
+    would push content off screen.
+
+    The `primary` hint is different: it is the action that moves the user
+    forward, it renders first, in the accent colour, and it is NEVER dropped.
+    That rule exists because it was broken: the results screen listed eight
+    hints with "C  Confirm cleanup" second from the end, so the key that starts
+    a cleanup was truncated away at every terminal width and users could not
+    find it.
     """
 
     def __init__(self, **kwargs) -> None:
         super().__init__(id="status-bar", **kwargs)
         self._pairs: list[tuple[str, str]] = []
+        self._primary: tuple[str, str] | None = None
 
-    def set_keys(self, pairs: list[tuple[str, str]]) -> None:
+    def set_keys(
+        self, pairs: list[tuple[str, str]], primary: tuple[str, str] | None = None
+    ) -> None:
         self._pairs = pairs
+        self._primary = primary
         self.refresh()
 
     def render(self) -> Text:
         width = max(20, self.size.width - 2)
         text = Text(no_wrap=True, overflow="ellipsis")
         used = 0
+
+        if self._primary is not None:
+            key, label = self._primary
+            text.append(f" {key} ", style=f"bold {PALETTE['bg']} on {PALETTE['ok']}")
+            text.append(f" {label}", style=f"bold {PALETTE['ok']}")
+            used = len(key) + len(label) + 5
+
         for key, label in self._pairs:
             chunk = len(key) + len(label) + 5
             if used + chunk > width:
                 break
             if used:
-                text.append("  ")
+                text.append("   ")
+                used += 3
             text.append(f" {key} ", style=f"bold {PALETTE['bg']} on {PALETTE['accent']}")
             text.append(f" {label}", style=PALETTE["text_dim"])
             used += chunk

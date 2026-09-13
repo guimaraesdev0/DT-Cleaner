@@ -96,14 +96,14 @@ class ResultsScreen(ChromeScreen):
         self.app.set_keys(  # type: ignore[attr-defined]
             [
                 ("SPACE", t("keys.toggle")),
-                ("A", t("keys.select_all_safe")),
-                ("N", t("keys.deselect_all")),
                 ("D", t("keys.details")),
                 ("R", t("keys.remove")),
                 ("P", t("keys.protect")),
-                ("C", t("keys.confirm_cleanup")),
+                ("A", t("keys.select_all_safe")),
+                ("N", t("keys.deselect_all")),
                 ("ESC", t("keys.back")),
-            ]
+            ],
+            primary=("C", t("keys.continue_cleanup")),
         )
         if not self.session.visible_items:
             return
@@ -288,16 +288,28 @@ class ResultsScreen(ChromeScreen):
         return rows[:9]
 
     def _refresh_summary(self) -> None:
+        """Counts, and -- first -- what to press next.
+
+        The call to action leads the line on purpose. It used to trail the
+        counts and was the first thing truncated on a narrow terminal, which is
+        exactly backwards: a user who cannot see the counts still gets by, a
+        user who cannot see how to continue is stuck.
+        """
         selected = self.session.selected_items
         removed = [i for i in self.session.items if i.removed_from_list]
         protected = [i for i in self.session.items if i.protected]
 
-        text = Text()
+        text = Text(no_wrap=True, overflow="ellipsis")
+        self._append_call_to_action(text, bool(selected))
+
+        text.append("   ")
         text.append(
-            t("review.selected_count",
-              count=len(selected),
-              size=human_bytes(sum(i.size_bytes for i in selected))),
-            style=f"bold {PALETTE['ok']}" if selected else PALETTE["text_dim"],
+            t(
+                "review.selected_count",
+                count=len(selected),
+                size=human_bytes(sum(i.size_bytes for i in selected)),
+            ),
+            style=PALETTE["text"] if selected else PALETTE["text_dim"],
         )
         if removed:
             text.append("   ")
@@ -305,7 +317,30 @@ class ResultsScreen(ChromeScreen):
         if protected:
             text.append("   ")
             text.append(t("review.protected_count", count=len(protected)), style=PALETTE["info"])
+
         self.query_one("#selection-summary", Static).update(text)
+
+    def _append_call_to_action(self, text: Text, has_selection: bool) -> None:
+        """Render "press [C] to continue" with the key badge in the right spot.
+
+        The sentinel split keeps word order correct in every language -- the key
+        sits mid-sentence in English and Portuguese alike, so appending the
+        badge at the end produced "press  to continue  C".
+        """
+        key = "review.press_to_continue" if has_selection else "review.select_to_continue"
+        colour = PALETTE["ok"] if has_selection else PALETTE["text_faint"]
+        badge = f"bold {PALETTE['bg']} on {PALETTE['ok']}" if has_selection else (
+            f"bold {PALETTE['bg']} on {PALETTE['text_faint']}"
+        )
+
+        # Private-use codepoint: it cannot occur in a real translation.
+        sentinel = "\ue000"
+        before, _, after = t(key, key=sentinel).partition(sentinel)
+        if before:
+            text.append(before, style=colour)
+        text.append(" C ", style=badge)
+        if after:
+            text.append(after, style=colour)
 
     # -- actions ------------------------------------------------------------
     def action_toggle(self) -> None:

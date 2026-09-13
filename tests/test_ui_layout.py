@@ -234,3 +234,73 @@ async def test_resizing_a_live_screen_does_not_break_it(session: ScanSession) ->
             await pilot.pause()
             assert_fits(app, size[0], size[1], "results after resize")
             assert app.screen.query_one("#items").row_count == len(session.visible_items)
+
+
+# --- discoverability --------------------------------------------------------
+# The results screen listed eight key hints with "C  Confirm cleanup" second
+# from the end. The status bar drops hints from the right, so C was truncated
+# away at EVERY terminal width and users could not find how to start a cleanup.
+
+
+@pytest.mark.parametrize("size", SIZES)
+async def test_continue_key_is_always_visible(size, session: ScanSession) -> None:
+    from dtcleaner.ui.components import StatusBar
+
+    app = DTCleanerApp(skip_splash=True)
+    async with app.run_test(size=size) as pilot:
+        app.push_screen(ResultsScreen(session))
+        await pilot.pause()
+        await pilot.pause()
+
+        bar = app.screen.query_one(StatusBar).render().plain
+        assert " C " in bar, f"the continue key vanished at {size}: {bar!r}"
+        assert bar.lstrip().startswith("C"), "the primary action must lead the bar"
+
+
+@pytest.mark.parametrize("size", SIZES)
+async def test_summary_states_the_next_step(size, session: ScanSession) -> None:
+    """The counts alone never told the user the screen went anywhere."""
+    from textual.widgets import Static
+
+    app = DTCleanerApp(skip_splash=True)
+    async with app.run_test(size=size) as pilot:
+        app.push_screen(ResultsScreen(session))
+        await pilot.pause()
+        await pilot.pause()
+
+        summary = app.screen.query_one("#selection-summary", Static).render().plain
+        assert " C " in summary, f"no call to action at {size}: {summary!r}"
+        # It leads the line, so a narrow terminal truncates the counts instead.
+        assert summary.index(" C ") < 30
+
+
+async def test_call_to_action_adapts_to_an_empty_selection(session: ScanSession) -> None:
+    from textual.widgets import Static
+
+    for item in session.items:
+        item.selected = False
+
+    app = DTCleanerApp(skip_splash=True)
+    async with app.run_test(size=(110, 30)) as pilot:
+        app.push_screen(ResultsScreen(session))
+        await pilot.pause()
+        await pilot.pause()
+
+        summary = app.screen.query_one("#selection-summary", Static).render().plain
+        assert " C " in summary
+        assert "select" in summary.lower() or "selecione" in summary.lower()
+
+
+async def test_primary_hint_survives_a_resize(session: ScanSession) -> None:
+    from dtcleaner.ui.components import StatusBar
+
+    app = DTCleanerApp(skip_splash=True)
+    async with app.run_test(size=(140, 45)) as pilot:
+        app.push_screen(ResultsScreen(session))
+        await pilot.pause()
+        for width, height in [(60, 18), (200, 60), (80, 24)]:
+            await pilot.resize_terminal(width, height)
+            await pilot.pause()
+            await pilot.pause()
+            bar = app.screen.query_one(StatusBar).render().plain
+            assert " C " in bar, f"continue key lost after resizing to {width}x{height}"
