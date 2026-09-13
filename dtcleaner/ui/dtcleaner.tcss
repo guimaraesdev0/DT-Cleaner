@@ -1,0 +1,284 @@
+/* DT-Cleaner stylesheet.
+
+   Responsive strategy
+   -------------------
+   The App declares HORIZONTAL_BREAKPOINTS and VERTICAL_BREAKPOINTS, so Textual
+   stamps one of these classes on the Screen and keeps it current as the
+   terminal is resized:
+
+     -compact   < 90 columns      -short   < 28 rows
+     -normal    90..129 columns
+     -wide      >= 130 columns
+
+   Rules below are written mobile-first: the base rule is the narrow layout and
+   the breakpoint classes progressively add columns. That way an unexpected size
+   degrades into the stacked layout instead of into a broken one. */
+
+Screen {
+    background: #0d1117;
+    color: #e6edf3;
+    overflow-x: hidden;
+}
+
+.-hidden { display: none; }
+
+/* --- shared chrome ----------------------------------------------------- */
+
+#app-header {
+    dock: top;
+    height: 1;
+    background: #161b22;
+    padding: 0 1;
+    color: #e6edf3;
+}
+
+#status-bar {
+    dock: bottom;
+    height: 1;
+    background: #161b22;
+    color: #8b949e;
+    padding: 0 1;
+}
+
+.content {
+    padding: 0 1;
+    height: 1fr;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.panel {
+    background: #1c2128;
+    border: round #30363d;
+    padding: 0 1;
+    height: auto;
+    width: 1fr;
+    overflow-x: hidden;
+}
+
+.panel-title {
+    color: #ffb547;
+    text-style: bold;
+    height: 1;
+}
+
+.mascot-line {
+    height: 1;
+    color: #8b949e;
+    padding: 0 1;
+}
+
+.dim    { color: #8b949e; }
+.faint  { color: #6e7681; }
+.accent { color: #ffb547; }
+.ok     { color: #3fb950; }
+.warn   { color: #d29922; }
+.danger { color: #f85149; }
+.center { content-align: center middle; text-align: center; }
+
+.subtitle { height: 1; color: #8b949e; }
+
+/* --- splash ------------------------------------------------------------ */
+/* The only screen that shows the 5-line mascot: it is centered, alone, and
+   has the whole viewport to itself. */
+
+#splash { align: center middle; height: 1fr; }
+#splash-wordmark { color: #ffb547; text-align: center; width: 100%; height: auto; }
+#splash-mascot   { color: #58a6ff; text-align: center; width: 100%; height: auto; }
+#splash-tagline  { color: #8b949e; text-align: center; width: 100%; height: auto; }
+#splash-byte     { color: #6e7681; text-align: center; width: 100%; height: auto; }
+
+#splash-wordmark-small { color: #ffb547; text-align: center; width: 100%; height: auto; }
+
+/* The block wordmark is 80 columns wide, so it only appears from `-normal`
+   (90 columns) up. Below that the narrow variant takes its place -- a small
+   terminal still gets a logo instead of a blank gap. */
+#splash-wordmark { display: none; }
+.-normal #splash-wordmark, .-wide #splash-wordmark { display: block; }
+.-normal #splash-wordmark-small, .-wide #splash-wordmark-small { display: none; }
+
+/* The splash total is ~11 rows with the compact wordmark, so BYTE stays put
+   even on a short terminal -- this is the one screen with room to spare. */
+
+/* --- home -------------------------------------------------------------- */
+
+#home-body { layout: vertical; height: 1fr; width: 100%; }
+
+#home-menu { width: 100%; height: 1fr; padding: 0; }
+
+/* The side column is a bonus, not a requirement. It only appears when there
+   is genuinely room for it beside a readable menu. */
+#home-side { display: none; }
+.-wide #home-body { layout: horizontal; }
+.-wide #home-menu { width: 2fr; padding-right: 1; }
+.-wide #home-side { display: block; width: 1fr; min-width: 30; height: 1fr; }
+
+/* One row per entry. The previous 3-row bordered box clipped its own
+   description and pushed entries 6 and 7 off a 24-row terminal. */
+.menu-item {
+    height: 1;
+    width: 100%;
+    padding: 0 1;
+    color: #e6edf3;
+}
+
+.menu-item:focus { background: #1f2937; text-style: bold; }
+.menu-item:hover { background: #161b22; }
+
+/* --- scan progress ----------------------------------------------------- */
+
+#phase-list { height: auto; width: 100%; }
+
+#scan-bar   { width: 100%; height: 1; }
+#sweep-bar  { width: 100%; height: 1; }
+#scan-path  { height: 1; width: 100%; }
+#scan-stats { height: 1; width: 100%; }
+
+/* The live feed takes the remaining space: it is the part worth watching. */
+#find-feed {
+    height: 1fr;
+    min-height: 3;
+    width: 100%;
+    background: #161b22;
+    padding: 0 1;
+}
+
+/* Phase names are long; on a narrow terminal the list is the first thing to
+   go, since the progress bar and current path carry the same information. */
+.-compact #phase-list { display: none; }
+
+Bar > .bar--bar      { color: #ffb547; }
+Bar > .bar--complete { color: #3fb950; }
+
+/* --- results ----------------------------------------------------------- */
+
+#dashboard { layout: vertical; height: auto; width: 100%; }
+#dashboard .panel { width: 100%; }
+
+/* CATEGORIES is the least critical panel: it repeats information the table
+   already shows, so it is the first to be dropped. */
+#panel-cats { display: none; }
+
+.-normal #dashboard { layout: horizontal; }
+.-normal #dashboard .panel { width: 1fr; }
+.-wide   #dashboard { layout: horizontal; }
+.-wide   #dashboard .panel { width: 1fr; }
+.-wide   #panel-cats { display: block; }
+
+/* On a short terminal the dashboard is collapsed entirely: the table is the
+   reason the user is on this screen. */
+.-short #dashboard { display: none; }
+
+#items {
+    height: 1fr;
+    min-height: 5;
+    width: 100%;
+    background: #0d1117;
+}
+
+DataTable > .datatable--cursor { background: #1f2937; color: #e6edf3; }
+DataTable > .datatable--header { background: #161b22; color: #ffb547; text-style: bold; }
+
+#filter-input { height: 3; width: 100%; }
+
+#selection-summary {
+    height: 1;
+    width: 100%;
+    background: #161b22;
+    color: #e6edf3;
+    padding: 0 1;
+}
+
+/* --- preview ----------------------------------------------------------- */
+
+#preview-warning {
+    height: auto;
+    width: 100%;
+    border: round #d29922;
+    background: #1c2128;
+    padding: 0 1;
+    color: #d29922;
+}
+
+#preview-warning.-permanent { border: round #f85149; color: #f85149; }
+
+/* The "biggest items" panel is supporting detail; the totals are not. */
+.-compact #preview-top { display: none; }
+.-short   #preview-top { display: none; }
+
+#confirm-input { height: 3; width: 100%; }
+
+/* --- cleanup ----------------------------------------------------------- */
+
+#cleanup-bar     { width: 100%; height: 1; }
+#cleanup-current { height: 1; width: 100%; }
+#cleanup-stats   { height: auto; width: 100%; }
+
+/* --- modals ------------------------------------------------------------ */
+
+ModalScreen { align: center middle; }
+
+#modal-box {
+    width: 80%;
+    max-width: 90;
+    min-width: 30;
+    height: auto;
+    max-height: 90%;
+    border: round #ffb547;
+    background: #161b22;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+#modal-title { color: #ffb547; text-style: bold; height: 1; }
+
+/* Action rows dock to the bottom of their screen so a small terminal can never
+   push the confirm/back buttons out of reach. Inside a modal box the box itself
+   is the container, so the same rule keeps them pinned there too. */
+#modal-buttons {
+    dock: bottom;
+    height: 3;
+    width: 100%;
+    align-horizontal: right;
+    background: #0d1117;
+    padding: 0 1;
+}
+
+#modal-box #modal-buttons { dock: none; background: #161b22; }
+
+Button { margin-left: 1; min-width: 10; height: 3; }
+
+/* --- settings / protected ---------------------------------------------- */
+
+.setting-row {
+    height: auto;
+    width: 100%;
+    layout: vertical;
+    border-bottom: solid #21262d;
+    padding: 0 1;
+}
+
+.setting-label { width: 100%; height: auto; }
+.setting-value { width: 100%; height: auto; align-horizontal: left; }
+
+/* Side-by-side label and control only when there is room for both. */
+.-normal .setting-row, .-wide .setting-row { layout: horizontal; height: 3; }
+.-normal .setting-label, .-wide .setting-label { width: 1fr; content-align: left middle; }
+.-normal .setting-value, .-wide .setting-value {
+    width: auto; min-width: 22; align-horizontal: right; content-align: right middle;
+}
+
+#protected-list { height: 1fr; min-height: 3; width: 100%; }
+#protected-status { height: 1; width: 100%; }
+#path-input { width: 1fr; }
+
+/* --- history ----------------------------------------------------------- */
+
+#cleanups, #scans { height: 1fr; min-height: 4; width: 100%; }
+
+/* --- empty states ------------------------------------------------------ */
+
+.empty-state { align: center middle; height: 1fr; width: 100%; }
+.empty-state .mascot { color: #58a6ff; text-align: center; width: 100%; height: auto; }
+.empty-state .title  { color: #ffb547; text-style: bold; text-align: center; width: 100%; height: 1; }
+.empty-state .body   { color: #8b949e; text-align: center; width: 100%; height: auto; }
