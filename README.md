@@ -19,7 +19,7 @@ and helps you delete them **safely**.
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Windows](https://img.shields.io/badge/Windows-supported-success.svg)](docs/platforms.md)
 [![Linux / macOS](https://img.shields.io/badge/Linux%20%7C%20macOS-experimental-orange.svg)](docs/platforms.md)
-[![Tests](https://img.shields.io/badge/tests-223%20passing-success.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-234%20passing-success.svg)](tests/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 </div>
@@ -310,7 +310,7 @@ or macOS is the single most useful contribution right now.**
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                     # 223 tests
+pytest -q                     # 234 tests
 pytest -q --cov=dtcleaner     # with coverage
 ```
 
