@@ -1,0 +1,12 @@
+# Normalise line endings: LF in the repository, native in the working tree.
+* text=auto eol=lf
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Textual screenshot exports: text, but never worth diffing inline.
+docs/images/*.svg -diff linguist-generated
+
+# Keep GitHub's language stats about the app, not the fixtures.
+scripts/demo_data.py linguist-vendored
