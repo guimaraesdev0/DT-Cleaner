@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dt-cleaner"
+version = "0.1.0"
+description = "DT-Cleaner (DevTools Cleaner) - recupera espaco de dev com seguranca fail-closed."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Vinicius Guimaraes" }]
+keywords = ["cleaner", "node_modules", "devtools", "disk", "tui", "textual", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Filesystems",
+    "Topic :: Utilities",
+]
+
+
+dependencies = [
+    "textual>=0.80",
+    "rich>=13.7",
+    "typer>=0.12",
+    "pydantic>=2.7",
+    "send2trash>=1.8",
+]
+
+[project.optional-dependencies]
+win = ["pywin32>=306; sys_platform == 'win32'"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "pytest-cov>=5.0", "textual-dev>=1.5"]
+
+[project.scripts]
+dtc = "dtcleaner.cli:main"
+dt-cleaner = "dtcleaner.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/guimaraesdev0/DT-Cleaner"
+Repository = "https://github.com/guimaraesdev0/DT-Cleaner"
+Issues = "https://github.com/guimaraesdev0/DT-Cleaner/issues"
+Changelog = "https://github.com/guimaraesdev0/DT-Cleaner/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["dtcleaner"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
