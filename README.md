@@ -1,13 +1,5 @@
 <div align="center">
 
-```
- __   __
-/  \_/  \
-| o   o |     D T - C L E A N E R
-|   w   |
- \_____/
-```
-
 # DT-Cleaner
 
 **Reclaim dev disk space. Never delete in the dark.**
