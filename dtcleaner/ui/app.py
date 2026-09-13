@@ -17,11 +17,9 @@ must affect every subsequent decision immediately.
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
 
 from textual.app import App
 from textual.binding import Binding
-from textual.widgets import Static
 
 from dtcleaner.core.cleanup import CleanupEngine, CleanupProgress
 from dtcleaner.core.config import AppConfig, ConfigStore, get_config, get_store, save_config
@@ -202,7 +200,7 @@ class DTCleanerApp(App):
             # Called from the worker thread; hop back to the UI thread.
             try:
                 self.call_from_thread(screen.update_progress, progress)
-            except Exception:  # noqa: BLE001 - screen may already be gone
+            except Exception:
                 pass
 
         scanner = Scanner(
@@ -220,7 +218,7 @@ class DTCleanerApp(App):
     def _scan_worker(self, work) -> None:
         try:
             session = work()
-        except Exception as exc:  # noqa: BLE001 - a scan crash must not kill the app
+        except Exception as exc:
             self.call_from_thread(self._scan_failed, str(exc))
             return
         self.call_from_thread(self._scan_finished, session)
@@ -259,7 +257,7 @@ class DTCleanerApp(App):
         def on_progress(progress: CleanupProgress) -> None:
             try:
                 self.call_from_thread(screen.update_progress, progress)
-            except Exception:  # noqa: BLE001
+            except Exception:
                 pass
 
         engine = CleanupEngine(
@@ -286,7 +284,7 @@ class DTCleanerApp(App):
     def _cleanup_worker(self, work, started: datetime, plan: CleanupPlan) -> None:
         try:
             result = work()
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             self.call_from_thread(self._cleanup_failed, str(exc))
             return
         self.call_from_thread(self._cleanup_finished, result, plan)
@@ -320,7 +318,7 @@ class DTCleanerApp(App):
     def on_unmount(self) -> None:
         try:
             self.logger.close()
-        except Exception:  # noqa: BLE001
+        except Exception:
             pass
 
 

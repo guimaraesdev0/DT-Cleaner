@@ -79,9 +79,7 @@ class ChromeScreen(Screen):
         and leave a DataTable cursor frozen. Returning False deactivates the
         binding so the key falls through to the widget.
         """
-        if action in ("nav_down", "nav_up") and self._arrows_belong_to_focused():
-            return False
-        return True
+        return not (action in ("nav_down", "nav_up") and self._arrows_belong_to_focused())
 
     def action_nav_down(self) -> None:
         self.focus_next()

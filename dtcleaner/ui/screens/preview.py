@@ -18,9 +18,6 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import Button, Input, Static
 
 from dtcleaner.core.cleanup import build_plan
@@ -28,6 +25,7 @@ from dtcleaner.core.constants import RISK_ORDER, DeleteMode, RiskLevel
 from dtcleaner.core.models import CleanupPlan, ScanSession
 from dtcleaner.i18n import t
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 from dtcleaner.ui.theme import PALETTE, category_markup, risk_markup
 from dtcleaner.utils.formatting import human_bytes
 from dtcleaner.utils.paths import display_path

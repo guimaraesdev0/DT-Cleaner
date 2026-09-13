@@ -11,13 +11,15 @@ Delete the whole folder when you are done.
 
 from __future__ import annotations
 
-import os
 import random
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 
-SANDBOX = Path(os.environ.get("TEMP", ".")) / "dtc-sandbox"
+#: `%TEMP%` does not exist on Linux or macOS, and the old fallback was ".",
+#: which would have built the sandbox inside the repository itself.
+SANDBOX = Path(tempfile.gettempdir()) / "dtc-sandbox"
 
 
 def fill(directory: Path, count: int = 6, size_kb: int = 400) -> int:
@@ -92,7 +94,7 @@ def main() -> None:
     print(f"Total size: {total / 1024 / 1024:.1f} MB\n")
     print("Try it:")
     print(f'  dtc scan --path "{path}"      (report only, deletes nothing)')
-    print(f"  dtc                            (interactive: Custom Scan -> this path)\n")
+    print("  dtc                            (interactive: Custom Scan -> this path)\n")
     print("What SHOULD be offered:")
     print("  web-app/node_modules, web-app/dist, web-app/.next")
     print("  api-service/__pycache__, api-service/.pytest_cache")

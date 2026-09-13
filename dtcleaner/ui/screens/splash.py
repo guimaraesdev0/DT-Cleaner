@@ -8,14 +8,12 @@ from __future__ import annotations
 
 from textual.app import ComposeResult
 from textual.containers import Vertical
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import Static
 
 from dtcleaner.i18n import t
 from dtcleaner.ui import mascot
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 
 
 class SplashScreen(ChromeScreen):

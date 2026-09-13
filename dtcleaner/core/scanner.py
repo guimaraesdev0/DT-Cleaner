@@ -23,8 +23,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
 
-from dtcleaner.core.config import AppConfig
 from dtcleaner.core.confidence import Classifier
+from dtcleaner.core.config import AppConfig
 from dtcleaner.core.constants import SKIP_TRAVERSE_DIR_NAMES, Category, ScanMode
 from dtcleaner.core.models import ScanItem, ScanSession
 from dtcleaner.core.safety import SafetyEngine
@@ -233,9 +233,7 @@ class Scanner:
     def _keep(self, item: ScanItem) -> bool:
         if item.protected and not self.config.show_protected_items:
             return False
-        if item.category.value in self.config.excluded_categories:
-            return False
-        return True
+        return item.category.value not in self.config.excluded_categories
 
     # -- finalization ------------------------------------------------------
     def _finalize(self, items: list[ScanItem]) -> list[ScanItem]:

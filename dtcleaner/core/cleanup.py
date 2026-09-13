@@ -200,7 +200,7 @@ class CleanupEngine:
         if self.on_log is not None:
             try:
                 self.on_log(event, payload)
-            except Exception:  # noqa: BLE001 - logging must never break a cleanup
+            except Exception:
                 pass
 
     def cancel(self) -> None:

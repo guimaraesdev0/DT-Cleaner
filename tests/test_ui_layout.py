@@ -20,12 +20,8 @@ from dtcleaner.core.models import ScanItem, ScanSession
 from dtcleaner.ui.app import DTCleanerApp
 from dtcleaner.ui.components import AppHeader, StatusBar
 from dtcleaner.ui.screens.base import ChromeScreen
-from dtcleaner.ui.screens.help import HelpScreen
-from dtcleaner.ui.screens.history import HistoryScreen
 from dtcleaner.ui.screens.preview import PreviewScreen
-from dtcleaner.ui.screens.protected import ProtectedScreen
 from dtcleaner.ui.screens.results import ResultsScreen
-from dtcleaner.ui.screens.settings import SettingsScreen
 
 pytestmark = pytest.mark.asyncio
 

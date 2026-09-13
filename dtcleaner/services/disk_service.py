@@ -36,7 +36,7 @@ def drive_type(root: str) -> str:
 
         value = ctypes.windll.kernel32.GetDriveTypeW(ctypes.c_wchar_p(root))
         return _DRIVE_TYPES.get(int(value), "unknown")
-    except Exception:  # noqa: BLE001 - classification is a nicety, not a requirement
+    except Exception:
         return "unknown"
 
 
@@ -48,10 +48,7 @@ def list_disks(include_all: bool = False) -> list[DiskInfo]:
     """
     disks: list[DiskInfo] = []
 
-    if P.IS_WINDOWS:
-        roots = [f"{letter}:\\" for letter in string.ascii_uppercase]
-    else:
-        roots = ["/"]
+    roots = [f"{letter}:\\" for letter in string.ascii_uppercase] if P.IS_WINDOWS else ["/"]
 
     for root in roots:
         if not os.path.exists(root):

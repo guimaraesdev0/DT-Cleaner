@@ -17,17 +17,17 @@ from dtcleaner.core.safety import SafetyEngine
 
 
 def make_item(path: Path, **overrides) -> ScanItem:
-    defaults = dict(
-        path=str(path),
-        name=path.name,
-        category=Category.NODE_MODULES,
-        ecosystem=Ecosystem.NODE,
-        item_type="node_modules",
-        size_bytes=1024,
-        risk_level=RiskLevel.LOW,
-        confidence=0.95,
-        project_root=str(path.parent),
-    )
+    defaults = {
+        "path": str(path),
+        "name": path.name,
+        "category": Category.NODE_MODULES,
+        "ecosystem": Ecosystem.NODE,
+        "item_type": "node_modules",
+        "size_bytes": 1024,
+        "risk_level": RiskLevel.LOW,
+        "confidence": 0.95,
+        "project_root": str(path.parent),
+    }
     defaults.update(overrides)
     return ScanItem(**defaults)
 

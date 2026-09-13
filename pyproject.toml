@@ -61,3 +61,46 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+# Pinned explicitly rather than relying on the tool's defaults, which drift
+# between releases and would otherwise break CI on an unrelated ruff upgrade.
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # import sorting
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "SIM",  # simplify
+    "RUF",  # ruff-specific
+]
+ignore = [
+    # The codebase deliberately swallows exceptions in a few places, always
+    # with a comment explaining why: a failed log write must not break the
+    # operation being logged, and an unreadable directory must not end a scan.
+    "B904",
+    # Mutable class attributes are used as lookup tables on widgets and are
+    # never mutated; ClassVar annotations on Textual widgets fight the
+    # framework's own descriptors.
+    "RUF012",
+    # Typer's entire API is function calls in argument defaults.
+    "B008",
+    # try/except/pass is deliberate in the fail-closed paths, and each one
+    # carries a comment explaining what must not be allowed to propagate.
+    # contextlib.suppress would move that comment away from the failure.
+    "SIM105",
+    # Windows environment variables are genuinely mixed case (SystemDrive,
+    # ProgramFiles); upper-casing them would be wrong on the platform that
+    # defines them.
+    "SIM112",
+    # The UI uses typographic glyphs on purpose.
+    "RUF001",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests reach into private helpers on purpose to assert internal invariants.
+"tests/*" = ["SLF001"]
+# The screenshot script must set DTC_HOME before importing the app.
+"scripts/make_screenshots.py" = ["E402"]

@@ -22,7 +22,7 @@ try:  # pragma: no cover - availability depends on the environment
     from send2trash import send2trash as _send2trash
 
     SEND2TRASH_AVAILABLE = True
-except Exception:  # noqa: BLE001
+except Exception:
     _send2trash = None  # type: ignore[assignment]
     SEND2TRASH_AVAILABLE = False
 
@@ -50,7 +50,7 @@ def move_to_recycle_bin(path: str | os.PathLike[str]) -> DeleteReport:
         # the shell API it calls.
         _send2trash(os.path.abspath(str(path)))
         return DeleteReport(True, "recycle_bin")
-    except Exception as exc:  # noqa: BLE001 - shell API raises many exception types
+    except Exception as exc:
         return DeleteReport(False, "recycle_bin", _error_key(exc), str(exc))
 
 
@@ -62,11 +62,11 @@ def delete_permanently(path: str | os.PathLike[str]) -> DeleteReport:
         return DeleteReport(True, "permanent")
     except OSError as exc:
         return DeleteReport(False, "permanent", _error_key(exc), str(exc))
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return DeleteReport(False, "permanent", "error.unexpected", str(exc))
 
 
-def _force_writable(func, path, exc_info) -> None:  # noqa: ANN001
+def _force_writable(func, path, exc_info) -> None:
     """rmtree error handler: clear the read-only bit and retry once.
 
     npm and pip both leave read-only files behind on Windows, which makes a

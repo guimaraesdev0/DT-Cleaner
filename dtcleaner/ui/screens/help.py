@@ -13,15 +13,13 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import VerticalScroll
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import Static
 
 from dtcleaner.core.constants import RiskLevel
 from dtcleaner.i18n import t
 from dtcleaner.ui.components import MascotLine
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 from dtcleaner.ui.theme import PALETTE, risk_markup
 
 SHORTCUTS: tuple[tuple[str, str], ...] = (
@@ -52,7 +50,6 @@ class HelpScreen(ChromeScreen):
     BINDINGS = [Binding("escape", "back", show=False)]
 
     def compose_content(self) -> ComposeResult:
-        caps = self.app.caps  # type: ignore[attr-defined]
         with VerticalScroll(classes="content"):
             yield MascotLine(Mood.IDLE)
             yield Static(self._rules(), classes="panel")

@@ -12,15 +12,13 @@ import os
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import Button, Checkbox, Input, Static
 
 from dtcleaner.core.constants import ScanMode
 from dtcleaner.i18n import t
 from dtcleaner.services.disk_service import list_disks
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 from dtcleaner.ui.theme import PALETTE
 from dtcleaner.utils.formatting import human_bytes, percent
 
@@ -36,14 +34,20 @@ class CustomScanScreen(ChromeScreen):
             yield Static(t("scan.select_drives"), classes="panel-title")
             with Vertical(id="drive-list"):
                 for disk in list_disks():
+                    free = t("results.free").lower()
+                    used = t("results.used").lower()
                     label = (
                         f"{disk.mountpoint}   "
-                        f"{human_bytes(disk.free_bytes)} {t('results.free').lower()} / "
+                        f"{human_bytes(disk.free_bytes)} {free} / "
                         f"{human_bytes(disk.total_bytes)}   "
-                        f"({percent(disk.used_bytes, disk.total_bytes)} {t('results.used').lower()})"
+                        f"({percent(disk.used_bytes, disk.total_bytes)} {used})"
                     )
-                    yield Checkbox(label, value=False, id=f"drive-{disk.device[0]}",
-                                   name=disk.mountpoint)
+                    yield Checkbox(
+                        label,
+                        value=False,
+                        id=f"drive-{disk.device[0]}",
+                        name=disk.mountpoint,
+                    )
 
             yield Static(t("scan.select_paths"), classes="panel-title")
             with Horizontal():

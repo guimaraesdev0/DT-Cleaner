@@ -82,5 +82,5 @@ def bar(part: float, total: float, width: int = 20, fill: str = "█", empty: st
     if total <= 0:
         return empty * width
     ratio = max(0.0, min(1.0, part / total))
-    filled = int(round(ratio * width))
+    filled = round(ratio * width)
     return fill * filled + empty * (width - filled)

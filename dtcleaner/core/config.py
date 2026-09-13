@@ -145,7 +145,7 @@ class ConfigStore:
             if not isinstance(raw, dict):
                 return AppConfig()
             return AppConfig.model_validate(raw)
-        except Exception:  # noqa: BLE001 - a corrupt config falls back to safe defaults
+        except Exception:
             return AppConfig()
 
     def save(self, config: AppConfig) -> None:

@@ -86,7 +86,7 @@ class PythonDetector(RuleDetector):
         ),
     )
 
-    def inspect(self, dir_path: str, dir_name: str, parent_name: str):  # noqa: ANN201
+    def inspect(self, dir_path: str, dir_name: str, parent_name: str):
         """Also recognize `*.egg-info`, which has a variable prefix."""
         if dir_name.casefold().endswith(".egg-info"):
             from dtcleaner.core.models import Candidate

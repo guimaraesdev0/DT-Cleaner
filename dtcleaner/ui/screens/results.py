@@ -20,9 +20,6 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import DataTable, Input, Static
 
 from dtcleaner.core.constants import RISK_ORDER, RiskLevel
@@ -31,6 +28,7 @@ from dtcleaner.i18n import t
 from dtcleaner.services.disk_service import disks_for_paths
 from dtcleaner.ui.components import DiskPanel, EmptyState, StatPanel
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 from dtcleaner.ui.theme import (
     PALETTE,
     category_markup,
@@ -246,7 +244,7 @@ class ResultsScreen(ChromeScreen):
             return None
         try:
             row_key = table.coordinate_to_cell_key(table.cursor_coordinate).row_key
-        except Exception:  # noqa: BLE001 - empty table or transient cursor state
+        except Exception:
             return None
         return self._rows.get(str(row_key))
 
@@ -255,7 +253,7 @@ class ResultsScreen(ChromeScreen):
         try:
             for column, value in zip(self._columns, self._row_cells(item), strict=True):
                 table.update_cell(item.id, column, value)
-        except Exception:  # noqa: BLE001 - row may have been filtered out
+        except Exception:
             self._reload_table()
         self._refresh_summary()
 

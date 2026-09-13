@@ -13,9 +13,6 @@ from rich.table import Table
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Vertical
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import ProgressBar, Static
 
 from dtcleaner.core.cleanup import CleanupProgress
@@ -23,6 +20,7 @@ from dtcleaner.core.models import CleanupPlan
 from dtcleaner.i18n import t
 from dtcleaner.ui.components import MascotLine
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 from dtcleaner.ui.theme import PALETTE, category_markup
 from dtcleaner.utils.formatting import human_bytes
 from dtcleaner.utils.paths import display_path
@@ -43,7 +41,6 @@ class CleanupScreen(ChromeScreen):
         self._last: CleanupProgress | None = None
 
     def compose_content(self) -> ComposeResult:
-        caps = self.app.caps  # type: ignore[attr-defined]
         with Vertical(classes="content"):
             yield MascotLine(Mood.WORKING, id="cleanup-mascot")
             yield ProgressBar(total=self.plan.item_count, show_eta=False, id="cleanup-bar")

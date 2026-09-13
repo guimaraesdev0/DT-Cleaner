@@ -32,21 +32,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 _SHOT_HOME = Path(tempfile.mkdtemp(prefix="dtc-shots-home-"))
 os.environ["DTC_HOME"] = str(_SHOT_HOME)
 
-from demo_data import (  # noqa: E402
+from demo_data import (
     DEMO_DISKS,
     DEMO_HISTORY,
     build_cleanup_result,
     build_session,
 )
 
-from dtcleaner.core.config import get_config, get_store, save_config  # noqa: E402
-from dtcleaner.core.scanner import Phase, Progress  # noqa: E402
-from dtcleaner.ui.app import DTCleanerApp  # noqa: E402
-from dtcleaner.ui.screens import results as results_screen  # noqa: E402
-from dtcleaner.ui.screens.preview import PreviewScreen  # noqa: E402
-from dtcleaner.ui.screens.results import ResultsScreen  # noqa: E402
-from dtcleaner.ui.screens.scan_progress import ScanProgressScreen  # noqa: E402
-from dtcleaner.ui.screens.summary import SummaryScreen  # noqa: E402
+from dtcleaner.core.config import get_config, get_store, save_config
+from dtcleaner.core.scanner import Phase, Progress
+from dtcleaner.ui.app import DTCleanerApp
+from dtcleaner.ui.screens import results as results_screen
+from dtcleaner.ui.screens.preview import PreviewScreen
+from dtcleaner.ui.screens.results import ResultsScreen
+from dtcleaner.ui.screens.scan_progress import ScanProgressScreen
+from dtcleaner.ui.screens.summary import SummaryScreen
 
 OUT = REPO_ROOT / "docs" / "images"
 
@@ -97,7 +97,7 @@ def seed_history() -> None:
     from dtcleaner.services.history_service import HistoryService
 
     service = HistoryService(get_store().history_path)
-    with service._connect() as conn:  # noqa: SLF001 - fixture seeding, not app code
+    with service._connect() as conn:
         for index, (recovered, deleted, when) in enumerate(DEMO_HISTORY):
             conn.execute(
                 """INSERT OR REPLACE INTO cleanups

@@ -33,13 +33,14 @@ from dtcleaner.core.constants import (
     FORBIDDEN_ENV_VARS,
     MIN_CONFIDENCE_DELETABLE,
     MIN_DELETE_DEPTH,
+    POSIX_PROTECTED_HOME_DIRS,
+    POSIX_SYSTEM_DIR_NAMES,
+    POSIX_SYSTEM_ROOTS,
+    POSIX_TEMP_ROOTS,
     PROTECTED_DIR_NAMES,
     PROTECTED_FILE_NAMES,
     PROTECTED_FILE_PREFIXES,
     PROTECTED_FILE_SUFFIXES,
-    POSIX_PROTECTED_HOME_DIRS,
-    POSIX_SYSTEM_DIR_NAMES,
-    POSIX_SYSTEM_ROOTS,
     PROTECTED_PROFILE_DIRS,
     SYSTEM_DIR_NAMES,
     RiskLevel,
@@ -95,7 +96,7 @@ class SafetyEngine:
         for entry in protected:
             try:
                 canon.append(P.canonical(entry))
-            except Exception:  # noqa: BLE001 - user input, never trusted
+            except Exception:
                 continue
         self.user_protected = list(protected)
         self._protected_canon = tuple(canon)
@@ -116,7 +117,7 @@ class SafetyEngine:
         """
         try:
             canon = P.canonical(path)
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             return _block("safety.unresolvable", error=str(exc))
 
         if not canon:
@@ -137,16 +138,23 @@ class SafetyEngine:
         # Both name sets are consulted on both platforms. They do not overlap in
         # any harmful way, and checking both means a mounted or copied tree from
         # the other OS is still refused.
+        #
+        # Temp directories are exempt from the system rules only. On macOS the
+        # system temp directory resolves to `/private/var/folders/...`, which
+        # sits inside two system roots; without this the engine refused every
+        # path under it. Every other layer below still applies.
+        in_temp = _is_temp(canon)
         first = parts[0]
-        if first in SYSTEM_DIR_NAMES:
-            return _block("safety.system_dir", name=first)
-        if not P.IS_WINDOWS and first in POSIX_SYSTEM_DIR_NAMES:
-            return _block("safety.system_dir", name=first)
+        if not in_temp:
+            if first in SYSTEM_DIR_NAMES:
+                return _block("safety.system_dir", name=first)
+            if not P.IS_WINDOWS and first in POSIX_SYSTEM_DIR_NAMES:
+                return _block("safety.system_dir", name=first)
 
-        # --- system paths resolved from environment variables --------------
-        for root in self._system_roots:
-            if P.is_within(canon, root):
-                return _block("safety.inside_system", root=root)
+            # --- system paths resolved from environment variables ----------
+            for root in self._system_roots:
+                if P.is_within(canon, root):
+                    return _block("safety.inside_system", root=root)
 
         # --- current user profile ------------------------------------------
         # Checked before the generic rule below so the current user gets the
@@ -357,6 +365,17 @@ class SafetyEngine:
         return Verdict(True, expected_risk, "safety.gate_passed")
 
 
+def _is_temp(canon: str) -> bool:
+    """True when the path lives in OS scratch space.
+
+    Narrow by design: only the directories the operating system itself empties.
+    `/private/etc` and `/private/var/db` are not temp and stay blocked.
+    """
+    if P.IS_WINDOWS:
+        return False
+    return any(P.is_within(canon, root) for root in POSIX_TEMP_ROOTS)
+
+
 def _collect_system_roots() -> tuple[str, ...]:
     """Real system paths of this machine, resolved from environment variables.
 
@@ -372,7 +391,7 @@ def _collect_system_roots() -> tuple[str, ...]:
                 continue
             try:
                 roots.append(P.canonical(value))
-            except Exception:  # noqa: BLE001
+            except Exception:
                 continue
     else:
         # None of the Windows variables exist here, so without this branch
@@ -381,7 +400,7 @@ def _collect_system_roots() -> tuple[str, ...]:
             if os.path.isdir(root):
                 try:
                     roots.append(P.canonical(root))
-                except Exception:  # noqa: BLE001
+                except Exception:
                     continue
 
     # Deliberate note: volume roots (`C:\`) and `C:\Users` are NOT listed here.

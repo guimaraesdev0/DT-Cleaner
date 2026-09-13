@@ -3,8 +3,8 @@
 | Platform | Status | What that means |
 |---|---|---|
 | **Windows 10 / 11** | ✅ **Supported** | Every safety rule is implemented and covered by tests that run on Windows. This is the platform DT-Cleaner is built and verified on. |
-| **Linux** | 🧪 **Experimental** | Runs, and the POSIX denylist is implemented, but the path rules have not been exercised on a real Linux host. |
-| **macOS** | 🧪 **Experimental** | Same as Linux. The macOS-specific roots (`/System`, `/Library`, `/Applications`, `/private`) are declared but untested in practice. |
+| **Linux** | 🧪 **Experimental** | The full test suite passes in CI on Ubuntu across Python 3.11–3.13. Not yet exercised in day-to-day use, and Full Scan still does not enumerate real mount points. |
+| **macOS** | 🧪 **Experimental** | The suite passes in CI after the temp carve-out below. The macOS-specific roots (`/System`, `/Library`, `/Applications`, `/private`) are declared but untested against a real cleanup. |
 
 `dtc doctor` reports the level for the machine it is running on. On an
 experimental platform it prints a warning rather than an OK — a tool that
@@ -50,12 +50,39 @@ Plus the hidden home directories POSIX users expect to keep: `.local`,
 run on Windows too and the list cannot silently rot. The live path checks are
 skipped off-POSIX and are what still needs a real Linux/macOS run.
 
+## The macOS temp trap
+
+Adding the POSIX roots broke macOS completely, and the reason is worth
+recording.
+
+On macOS `/tmp` and `/var` are symlinks into `/private`, so `realpath` turns
+every temporary directory into `/private/var/folders/…`. That sits inside two
+entries of the list above, so the engine refused **every path under the system
+temp directory** — which is exactly where `scripts/make_sandbox.py` builds its
+demo tree and where the whole test suite works. Fourteen tests failed on macOS
+while Linux and Windows were green.
+
+The fix is `POSIX_TEMP_ROOTS`: scratch space that lives inside a system root but
+is not system content, exempted from the system rules only.
+
+```
+/tmp  /private/tmp  /var/tmp  /private/var/tmp  /var/folders  /private/var/folders
+```
+
+It is deliberately narrow — the directories the OS itself empties, and nothing
+else. `/private/etc`, `/private/var/db`, `/private/var/root` and `/var/log` are
+**not** exempt and stay blocked, which
+`test_temp_carveout_does_not_cover_system_paths` asserts as data on every
+platform. Every other layer — minimum depth, profile rules, protected names,
+your protected paths, reparse points — still applies inside temp.
+
 ## What still needs work before POSIX is "supported"
 
-1. **Run the suite on Linux and macOS.** `tests/test_safety_denylist.py` and
-   `tests/test_paths_windows.py` are Windows-only today; they need POSIX
-   equivalents covering case sensitivity (`/Users` vs `/users` behave
-   differently from Windows), symlink handling, and permission errors.
+1. **POSIX equivalents of the Windows-only suites.** CI now runs everything on
+   Ubuntu and macOS, but `tests/test_safety_denylist.py` and
+   `tests/test_paths_windows.py` skip themselves off Windows. They need POSIX
+   counterparts covering case sensitivity, symlink handling and permission
+   errors — the rules those files guard are currently unverified on POSIX.
 2. **Case sensitivity.** `canonical()` casefolds on Windows and does not on
    POSIX — correct, but the denylists were written for a casefolded world and
    deserve explicit tests on a case-sensitive filesystem.
@@ -70,9 +97,9 @@ skipped off-POSIX and are what still needs a real Linux/macOS run.
 
 ## Helping
 
-Running the test suite on Linux or macOS and opening an issue with the output is
-the single most useful contribution right now — especially any test that fails,
-and especially anything under `tests/test_platform_support.py`.
+CI covers Ubuntu and macOS, so the most useful contribution now is **real
+usage**: run a scan on a Linux or macOS machine, check what it offers, and open
+an issue if anything looks wrong — especially a false positive.
 
 ```bash
 git clone https://github.com/guimaraesdev0/DT-Cleaner.git

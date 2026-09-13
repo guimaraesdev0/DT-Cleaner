@@ -76,7 +76,7 @@ class Throttle:
             return
         try:
             fn(*args, **kwargs)
-        except Exception:  # noqa: BLE001 - a broken callback must not kill the scan
+        except Exception:
             pass
 
     def force(self, fn: Callable[..., Any] | None, *args: Any, **kwargs: Any) -> None:
@@ -87,5 +87,5 @@ class Throttle:
             self._last = time.monotonic()
         try:
             fn(*args, **kwargs)
-        except Exception:  # noqa: BLE001
+        except Exception:
             pass

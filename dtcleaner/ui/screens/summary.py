@@ -13,15 +13,13 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
-from textual.screen import Screen
-
-from dtcleaner.ui.screens.base import ChromeScreen
 from textual.widgets import Button, Static
 
 from dtcleaner.core.models import CleanupResult
 from dtcleaner.i18n import t
 from dtcleaner.ui.components import MascotLine
 from dtcleaner.ui.mascot import Mood
+from dtcleaner.ui.screens.base import ChromeScreen
 from dtcleaner.ui.theme import PALETTE
 from dtcleaner.utils.formatting import human_bytes, human_duration
 from dtcleaner.utils.paths import display_path
@@ -39,7 +37,6 @@ class SummaryScreen(ChromeScreen):
         self.protected_count = protected_count
 
     def compose_content(self) -> ComposeResult:
-        caps = self.app.caps  # type: ignore[attr-defined]
         mood = Mood.WARNING if self.result.failed_items else Mood.HAPPY
         with VerticalScroll(classes="content"):
             yield MascotLine(mood)

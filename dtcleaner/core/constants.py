@@ -140,6 +140,27 @@ POSIX_SYSTEM_DIR_NAMES: frozenset[str] = frozenset(
     }
 )
 
+# Scratch space that lives INSIDE a system root but is not system content.
+#
+# On macOS `/tmp` and `/var` are symlinks into `/private`, so `realpath` turns
+# every temp directory into `/private/var/folders/...`. Without this carve-out
+# the `/private` and `/var` entries above matched it and the engine refused
+# every path under the system temp directory -- which is where `make_sandbox.py`
+# builds its demo tree and where the test suite works, so the whole product was
+# inert on macOS.
+#
+# Kept deliberately narrow: these are the directories the OS itself empties.
+# `/private/etc` and `/private/var/db` are NOT here and stay blocked.
+POSIX_TEMP_ROOTS: tuple[str, ...] = (
+    "/tmp",
+    "/private/tmp",
+    "/var/tmp",
+    "/private/var/tmp",
+    "/var/folders",
+    "/private/var/folders",
+)
+
+
 # Hidden config directories directly in a POSIX home directory. The Windows
 # profile list already covers .ssh/.aws/.config; these are the rest.
 POSIX_PROTECTED_HOME_DIRS: frozenset[str] = frozenset(

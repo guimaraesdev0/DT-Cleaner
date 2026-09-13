@@ -14,8 +14,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from dtcleaner.core.constants import (
-    Category,
     MAX_AMBIGUOUS_MARKER_DISTANCE,
+    Category,
     Ecosystem,
     RiskLevel,
 )
